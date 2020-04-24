@@ -11,12 +11,13 @@
             class="form-control"
             placeholder="Quantity"
             v-model.number="quantity"
+            :class="{danger:insufficientQuantity}"
           >
           <button
             class="btn btn-danger ml-2 font"
             @click="sellStock"
-            :disabled="quantity <= 0 || !Number.isInteger(quantity)"
-          >Sell</button>
+            :disabled="insufficientQuantity || quantity <= 0 || !Number.isInteger(quantity)"
+          >{{insufficientQuantity ? 'Not Enough Stock' : 'Sell'}}</button>
         </div>
 
       </div>
@@ -30,6 +31,11 @@ export default {
   data () {
     return {
       quantity: 0
+    }
+  },
+  computed: {
+    insufficientQuantity () {
+      return this.quantity > this.stock.quantity
     }
   },
   methods: {
@@ -50,6 +56,9 @@ export default {
 }
 </script>
 <style scoped>
+  .danger{
+    border:1px solid red;
+  }
   .font{
     font-family: 'Cabin Condensed', sans-serif;
     font-weight: 700;
