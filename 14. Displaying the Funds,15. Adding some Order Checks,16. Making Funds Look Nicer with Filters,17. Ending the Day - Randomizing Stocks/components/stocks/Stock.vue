@@ -1,0 +1,68 @@
+<template>
+ <div class="col-sm-6 col-md-6">
+   <div class="card">
+     <div class="card-header bg-info font">
+       {{stock.name}} : Price {{ stock.price }}
+     </div>
+     <div class="card-body">
+       <div class="input-group">
+         <input
+           type="number"
+           class="form-control"
+           placeholder="Quantity"
+           v-model.number="quantity"
+           :class="{danger:insufficientFunds}"
+         >
+         <button
+           class="btn btn-danger ml-2 font"
+           @click="buyStock"
+           :disabled="insufficientFunds || quantity <= 0 || !Number.isInteger(quantity)"
+           >{{insufficientFunds ? 'insufficientFunds' : 'Buy'}}</button>
+       </div>
+
+     </div>
+   </div>
+ </div>
+</template>
+<style scoped>
+  .danger{
+    border:1px solid red;
+  }
+</style>
+<script>
+export default {
+  props: ['stock'],
+  data () {
+    return {
+      quantity: 0
+    }
+  },
+  methods: {
+    buyStock () {
+      const order = {
+        stockId: this.stock.id,
+        stockPrice: this.stock.price,
+        quantity: this.quantity
+      }
+
+      this.$store.dispatch('buyStock', order)
+    }
+  },
+  computed: {
+    funds () {
+      return this.$store.getters.funds
+    },
+    insufficientFunds () {
+      return this.quantity * this.stock.price > this.funds
+    }
+  }
+
+}
+</script>
+<style scoped>
+  .font{
+    font-family: 'Cabin Condensed', sans-serif;
+    font-weight: 700;
+    color:white;
+  }
+</style>
